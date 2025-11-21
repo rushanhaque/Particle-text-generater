@@ -3,23 +3,53 @@ const count = 12000;
 let currentState = 'sphere';
 
 function init() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0xf8f9fa);
-    document.getElementById('container').appendChild(renderer.domElement);
-
-    camera.position.z = 25;
-
-    createParticles();
-    setupEventListeners();
-    addTouchSupport(); // Add touch support for mobile
+    // Check if required libraries are loaded
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js library not loaded');
+        // Add a visual indicator for the error
+        const container = document.getElementById('container');
+        if (container) {
+            container.innerHTML = '<div style="color: #333; font-family: Arial, sans-serif; text-align: center; padding-top: 50px;">Error: Required libraries not loaded. Please refresh the page.</div>';
+        }
+        return;
+    }
     
-    // Initialize with cosmic color scheme
-    window.currentColorScheme = 'cosmic';
+    if (typeof gsap === 'undefined') {
+        console.error('GSAP library not loaded');
+        // Add a visual indicator for the error
+        const container = document.getElementById('container');
+        if (container) {
+            container.innerHTML = '<div style="color: #333; font-family: Arial, sans-serif; text-align: center; padding-top: 50px;">Error: Required libraries not loaded. Please refresh the page.</div>';
+        }
+        return;
+    }
     
-    animate();
+    try {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xf8f9fa);
+        document.getElementById('container').appendChild(renderer.domElement);
+
+        camera.position.z = 25;
+
+        createParticles();
+        setupEventListeners();
+        initTouchSupport(); // Add touch support for mobile
+        
+        // Initialize with cosmic color scheme
+        window.currentColorScheme = 'cosmic';
+        
+        animate();
+    } catch (error) {
+        console.error('Error initializing particle system:', error);
+        // Add a visual indicator for the error
+        const container = document.getElementById('container');
+        if (container) {
+            container.innerHTML = '<div style="color: #333; font-family: Arial, sans-serif; text-align: center; padding-top: 50px;">Error initializing particle system. Please check console for details.</div>';
+        }
+    }
 }
 
 function createParticles() {
@@ -546,4 +576,52 @@ function adjustParticleCount() {
 }
 
 // Initialize touch support
-init();
+function initTouchSupport() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!particles) return;
+        
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        
+        const deltaX = touchX - touchStartX;
+        const deltaY = touchY - touchStartY;
+        
+        // Rotate particles based on touch movement
+        particles.rotation.y += deltaX * 0.005;
+        particles.rotation.x += deltaY * 0.005;
+    }, { passive: true });
+}
+
+// Add error handling for window load
+window.addEventListener('load', function() {
+    // Small delay to ensure libraries are fully loaded
+    setTimeout(init, 100);
+});
+
+// Also keep the direct call for compatibility but with a check
+if (document.readyState === 'loading') {
+    // Document is still loading, wait for DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if libraries are available, if not wait a bit more
+        if (typeof THREE !== 'undefined' && typeof gsap !== 'undefined') {
+            init();
+        } else {
+            setTimeout(init, 500);
+        }
+    });
+} else {
+    // Document is already loaded
+    if (typeof THREE !== 'undefined' && typeof gsap !== 'undefined') {
+        init();
+    } else {
+        setTimeout(init, 500);
+    }
+}
