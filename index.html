@@ -57,8 +57,37 @@
             </button>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
+    <!-- Load libraries with fallback -->
+    <script>
+        // Fallback for Three.js
+        if (typeof THREE === 'undefined') {
+            var threeScript = document.createElement('script');
+            threeScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
+            threeScript.onload = function() {
+                console.log('Three.js loaded from fallback CDN');
+            };
+            threeScript.onerror = function() {
+                console.error('Failed to load Three.js');
+                document.getElementById('container').innerHTML = '<div style="color: #333; font-family: Arial, sans-serif; text-align: center; padding-top: 50px;">Error: Failed to load Three.js library</div>';
+            };
+            document.head.appendChild(threeScript);
+        }
+        
+        // Fallback for GSAP
+        if (typeof gsap === 'undefined') {
+            var gsapScript = document.createElement('script');
+            gsapScript.src = 'https://cdn.jsdelivr.net/npm/gsap@3.7.1/dist/gsap.min.js';
+            gsapScript.onload = function() {
+                console.log('GSAP loaded from fallback CDN');
+            };
+            gsapScript.onerror = function() {
+                console.error('Failed to load GSAP');
+                document.getElementById('container').innerHTML = '<div style="color: #333; font-family: Arial, sans-serif; text-align: center; padding-top: 50px;">Error: Failed to load GSAP library</div>';
+            };
+            document.head.appendChild(gsapScript);
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

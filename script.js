@@ -1,3 +1,19 @@
+// Add library loading check at the top
+(function() {
+    // Check if libraries are available, if not wait for them
+    function checkLibraries() {
+        if (typeof THREE !== 'undefined' && typeof gsap !== 'undefined') {
+            init();
+        } else {
+            console.log('Waiting for libraries to load...');
+            setTimeout(checkLibraries, 200);
+        }
+    }
+    
+    // Start checking for libraries
+    checkLibraries();
+})();
+
 let scene, camera, renderer, particles;
 const count = 12000;
 let currentState = 'sphere';
