@@ -1,0 +1,10 @@
+{
+  "name": "Particle Designer",
+  "short_name": "Particles",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "description": "Interactive particle text morphing application",
+  "orientation": "any",
+  "theme_color": "#4361ee"
+}
